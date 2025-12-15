@@ -1,0 +1,7 @@
+
+Module 1: Python for Finance
+The lingua franca of data science, machine learning, and finance
+
+    Implement the Kalman, extended Kalman, unscented Kalman, and particle filters in Python and compare their performance on generated data
+    Implement a European vanilla option pricer with AAD using the JAX library
+    Implement an optimal time series forecaster in Python using existing libraries such as xgBoost

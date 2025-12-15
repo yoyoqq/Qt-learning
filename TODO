@@ -1,0 +1,14 @@
+Kalman filter -> https://www.interactivebrokers.com/campus/ibkr-quant-news/kalman-filter-python-tutorial-and-strategies-part-i/
+
+
+
+Get more ideas from : https://qdc.org.uk/projects/
+                        https://openquant.co/blog/quantitative-finance-portfolio-projects
+                        
+
+Back-tester, option pricer, exchange simulator. Use C++ for extra points.
+
+Option pricing stuff. Calculate Greeks, implied volatility etc. then use this to price options using a vol surface with spline interpolations.
+
+Also fun to mess around with Monte Carlo pricing and variance reduction techniques.
+
