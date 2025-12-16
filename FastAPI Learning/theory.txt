@@ -1,0 +1,1 @@
+try out projects: https://www.geeksforgeeks.org/python/fastapi-tutorial/
