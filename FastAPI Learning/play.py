@@ -1,29 +1,46 @@
-import os
+from fastapi import FastAPI
 
-name = os.getenv("MY_NAME", "World")
-print(f"Hello {name} from Python")
-
-
-# from typing import Union
-
-# from fastapi import FastAPI
-
-# app = FastAPI()
+app = FastAPI()
 
 
-# @app.get("/")
-# def read_root():
-#     return {"Hello": "World"}
+@app.get("/")
+async def root():
+    return {"message": "Hello World"}
+    # return "HI"
+    
+@app.get("/items/{item_id}")
+def get_item(item_id: int):
+    return {"item_id": item_id}
+
+@app.get("/search")
+def search(q: str, limit: int = 10):
+    limit += 10
+    return {"query": q, "limit": limit}
 
 
-# @app.get("/items/{item_id}")
-# def read_item(item_id: int, q: Union[str, None] = None):
-#     return {"item_id": item_id, "q": q}
+# GOOD STUFF
+# ✔ JSON parsing
+# ✔ Type checking
+# ✔ Validation
+# ✔ Docs generation
+from pydantic import BaseModel
+
+class User(BaseModel):
+    name: str
+    age: int
+    email: str
+
+@app.post("/users")
+def create_user(user: User):
+    return user
 
 
-# def get_full_name(first_name, last_name):
-#     full_name = first_name.title() + " " + last_name.title()
-#     return full_name
 
+# ASYNC
+def some_async_call():
+    return 
 
-# print(get_full_name("john", "doe"))
+@app.get("/slow")
+async def slow():
+    await some_async_call()
+    return {"done": True}
