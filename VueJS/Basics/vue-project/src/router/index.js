@@ -9,7 +9,11 @@ const routes = [
   { path: "/login", component: Login}
 ]
 
+// export -> make available to other files
+// export default -> main for module exports 
+// createRouter() -> create the router instance 
 export default createRouter({
+  // mode of routing, HTML5 for /about 
   history: createWebHistory(),
   routes
 })
