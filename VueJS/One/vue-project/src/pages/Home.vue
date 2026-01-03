@@ -8,6 +8,7 @@
       @delete="store.deleteTask"
     />
   </ul>
+
 </template>
 
 <script setup>

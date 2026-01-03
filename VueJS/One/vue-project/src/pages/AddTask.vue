@@ -14,7 +14,7 @@
     const router = useRouter()
 
     function addTask(){
-        store.addTask(title.value)
+        store.AddTask(title.value)
         router.push("/")
         // console.log("Task:", title.value)
     }
