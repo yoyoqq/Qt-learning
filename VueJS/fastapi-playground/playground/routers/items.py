@@ -18,11 +18,12 @@ items_db = [
     {"id": 2, "name": "Item 2", "price": 20},
 ]
 
-# DELETE endpoint
-@router.delete("/{item_id}")  # <- This must match exactly
-def delete_item(item_id: int):
-    for i, item in enumerate(items_db):
-        if item["id"] == item_id:
-            items_db.pop(i)
-            return {"message": "Item deleted"}
-    raise HTTPException(status_code=404, detail="Item not found")
+# # DELETE endpoint
+# @router.delete("/{item_id}")  # <- This must match exactly
+# def delete_item(item_id: int):
+#     for i, item in enumerate(items_db):
+#         if item["id"] == item_id:
+#             items_db.pop(i)
+#             return {"message": "Item deleted"}
+#     raise HTTPException(status_code=404, detail="Item not found")
+
