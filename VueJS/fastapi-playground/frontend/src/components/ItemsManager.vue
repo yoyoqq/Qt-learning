@@ -38,7 +38,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, onUnmounted } from "vue";
 import { getItems, addItem, deleteItem, updateItem } from "@/services/api";
 
 const items = ref([]);
@@ -89,9 +89,33 @@ const saveEdit = async (id) => {
   cancelEdit();
 }
 
+// ! pooling 
+// const loadItems = async () => {
+//   await fetchItems()
+// }
+// let intervalId = null
+// onMounted(() => {
+//   loadItems()
+//   intervalId = setInterval(loadItems, 1000)
+// })
+// onUnmounted(() => {
+//   clearInterval(intervalId)
+// })
+
+
+// WEBSOCKETS 
+const socket = new WebSocket("ws://127.0.0.1:8000:ws")
+socket.onmessage = (event) => {
+  items.value = JSON.parse(event.data)
+}
+
+
+
+// only react when frontend requests
 onMounted(() => {
   fetchItems();
 });
+
 </script>
 
 <style scoped>
