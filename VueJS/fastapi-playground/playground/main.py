@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from playground.routers import items, users
+from playground.routers import items, users, websocket
 
 app = FastAPI()
 
@@ -16,5 +16,6 @@ app.add_middleware(
 )
 
 
-app.include_router(users.router, prefix="/users", tags=["Users"])
+app.include_router(users.router, prefix="/users", tags=["Users"])       # path for query, tags for documentation
 app.include_router(items.router, prefix="/items", tags=["Items"])
+app.include_router(websocket.router, prefix="/websocket", tags=["websocket"])

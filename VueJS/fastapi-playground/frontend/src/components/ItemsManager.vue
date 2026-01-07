@@ -21,12 +21,13 @@
         
         <template v-if="editingId === item.id">
           <input v-model="editValue" />
+          <input v-model="editPrice" type="number" step="0.01" />
           <button @click="saveEdit(item.id)">💾</button>
           <button @click="cancelEdit">✖</button>
         </template>
 
         <template v-else>
-          {{ item.name }}
+          {{ item.name }} - ${{ item.price }}
           <button @click="startEdit(item)">✏️</button>
           <button @click="removeItem(item.id)">❌</button>
         </template>
@@ -38,7 +39,8 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from "vue";
+// import { ref, onMounted, onUnmounted } from "vue";
+import { ref, onMounted, onUnmounted} from "vue";
 import { getItems, addItem, deleteItem, updateItem } from "@/services/api";
 
 const items = ref([]);
@@ -67,22 +69,24 @@ const removeItem = async (id) => {
 // EDIT VALUE 
 const editingId = ref(null)
 const editValue = ref("")
+const editPrice = ref(0)
 
 const startEdit = (item) => {
   editingId.value = item.id;
   editValue.value = item.name;
+  editPrice.value = item.price;
 }
 
 const cancelEdit = () => {
   editingId.value = null;
   editValue.value = "";
+  editPrice.value = 0;
 }
 
 const saveEdit = async (id) => {
-  if (!editValue.value.trim()) return;
+  if (!editValue.value.trim() || !editPrice.value) return;
 
-  const currentItem = items.value.find(i => i.id === id);
-  const response = await updateItem(id, { name: editValue.value, price: currentItem.price });
+  const response = await updateItem(id, { name: editValue.value, price: parseFloat(editPrice.value) });
   const index = items.value.findIndex(i => i.id === id);
   items.value[index] = response.data;
 
@@ -104,17 +108,38 @@ const saveEdit = async (id) => {
 
 
 // WEBSOCKETS 
-const socket = new WebSocket("ws://127.0.0.1:8000:ws")
-socket.onmessage = (event) => {
-  items.value = JSON.parse(event.data)
-}
+// const socket = new WebSocket("ws://127.0.0.1:8000:websocket")
+// socket.onmessage = (event) => {
+//   items.value = JSON.parse(event.data)
+// }
+let socket = null;
+onMounted(() => {
+  socket = new WebSocket("ws://127.0.0.1:8000/websocket/")
+
+  socket.onmessage = (event) => {
+    items.value = JSON.parse(event.data)
+  }
+
+  socket.onerror = (err) => {
+    console.error("Websocket error", err);
+  };
+
+})
+
+onUnmounted(() => {
+  if (socket) socket.close();
+})
+
+
+
+
 
 
 
 // only react when frontend requests
-onMounted(() => {
-  fetchItems();
-});
+// onMounted(() => {
+//   fetchItems();
+// });
 
 </script>
 
