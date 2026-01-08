@@ -119,8 +119,8 @@ import LogIn from './components/LogIn.vue';
 </script>
 
 <template>
+  <LogIn />
   <!-- <Items /> -->
-   <LogIn />
   <!-- <div>
     <h1>My FastAPI + Vue App</h1>
     <AddItem @item-added="reloadList++" />

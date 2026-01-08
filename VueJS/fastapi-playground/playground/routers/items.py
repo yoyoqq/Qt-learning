@@ -1,29 +1,24 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from playground.schemas import ItemCreate
 from playground.crud import create_item, get_items, delete_item, update_item
-# from schemas import Item, ItemCreate 
-# from items import get_items, create_item
+from playground.security.security import get_current_user
 
-
-router = APIRouter(
-    # prefix="items",
-    # tags=["items"]
-)
+router = APIRouter()
 
 @router.get("/")
 def list_items():
     return get_items()
 
 @router.post("/")
-def add_item(item: ItemCreate):
+def add_item(item: ItemCreate, user: str = Depends(get_current_user)):
     return create_item(item)
 
 @router.delete("/{item_id}")
-def remove_item(item_id: int):
+def remove_item(item_id: int, user: str = Depends(get_current_user)):
     return delete_item(item_id)
 
 @router.put("/{item_id}")
-def edit_item(item_id: int, item: ItemCreate):
+def edit_item(item_id: int, item: ItemCreate, user: str = Depends(get_current_user)):
     return update_item(item_id, item)
 
     

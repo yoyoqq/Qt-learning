@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted } from 'vue'
-import { fetchItems } from '../services/api.js'
+import { getItems } from '../services/api.js'
 
 const items = ref([])
 const loading = ref(true)
@@ -8,7 +8,8 @@ const error = ref(null)
 
 const loadItems = async () => {
   try {
-    items.value = await fetchItems()
+    const response = await getItems()
+    items.value = response.data
   } catch (err) {
     error.value = err.message
   } finally {
