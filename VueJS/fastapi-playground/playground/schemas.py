@@ -21,3 +21,8 @@ class ItemCreate(ItemBase):
 
 class Item(ItemBase):
     id: int 
+
+class LoginRequest(BaseModel):
+    email: str
+    password: str
+

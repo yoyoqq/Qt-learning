@@ -11,6 +11,13 @@ export const updateItem = (id, item) => api.put(`/items/${id}`, item);  // URL, 
 export const deleteItem = (id) => api.delete(`/items/${id}`)
 // export const updateItem = (id, item) => api.put(`/items/${id}`, item)
 
+// security 
+export const login = async (email, password) => {
+  const res = await api.post("/auth/login", {
+    email, password
+  })
+  return res.data
+}
 
 
 // export const fetchItems = async () => {

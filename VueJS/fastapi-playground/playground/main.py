@@ -1,5 +1,7 @@
 from fastapi import FastAPI
-from playground.routers import items, users, websocket
+from playground.routers import items, users, websocket, auth
+from playground.security import security
+
 
 app = FastAPI()
 
@@ -19,3 +21,5 @@ app.add_middleware(
 app.include_router(users.router, prefix="/users", tags=["Users"])       # path for query, tags for documentation
 app.include_router(items.router, prefix="/items", tags=["Items"])
 app.include_router(websocket.router, prefix="/websocket", tags=["websocket"])
+app.include_router(security.router)
+app.include_router(auth.router, prefix="/authenticateJWT", tags=["AUTH_JWT"])

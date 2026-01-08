@@ -110,15 +110,17 @@ onMounted(() => {
 
 <script setup>
 // import {ref} from "vue"
-import Items from "./components/ItemsManager.vue"
+// import Items from "./components/ItemsManager.vue"
 // import ItemList from './components/ItemList.vue'
 // import AddItem from './components/AddItem.vue'
+import LogIn from './components/LogIn.vue';
 
 // const reloadList = ref(0) // trigger reload
 </script>
 
 <template>
-  <Items />
+  <!-- <Items /> -->
+   <LogIn />
   <!-- <div>
     <h1>My FastAPI + Vue App</h1>
     <AddItem @item-added="reloadList++" />
