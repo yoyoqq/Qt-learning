@@ -1,12 +1,22 @@
-# Python
+# ===== Python =====
 venv/
 __pycache__/
 *.pyc
+*.pyd
 
-# Node / frontend
+# ===== Node / Frontend =====
 node_modules/
 dist/
 
-# OS
+# ===== Data / Trading =====
+*.parquet
+*.csv
+*.h5
+*.feather
+
+# ===== Secrets =====
+.env
+
+# ===== OS =====
 .DS_Store
 Thumbs.db
