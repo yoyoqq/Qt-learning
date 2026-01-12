@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import List, Optional, Any
 
 # symbol	timestamp	open	high	low	close	volume	trade_count	vwap
@@ -27,10 +27,10 @@ class IndicatorSpec(BaseModel):
     params: dict[str, Any] = {}
 
 class MarketQuery(BaseModel):
-    symbol: str
-    start_time: datetime
-    end_time: datetime
+    symbol: str = "SPY"
+    start_time: datetime = datetime(2023, 1, 2, 0, 0, tzinfo=timezone.utc)
+    end_time: datetime = datetime(2023, 1, 5, 0, 0, tzinfo=timezone.utc)
     mode: str = "bars"      # ticks | bars 
-    bar_size: Optional[str] = "1s"
+    bar_size: Optional[str] = "5m"
     indicators: Optional[List[IndicatorSpec]] = None
     limit: Optional[int] = 100_000
