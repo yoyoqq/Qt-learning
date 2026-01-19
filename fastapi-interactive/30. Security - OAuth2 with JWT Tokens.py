@@ -60,6 +60,7 @@ from jwt.exceptions import InvalidTokenError
 from passlib.context import CryptContext
 from pydantic import BaseModel
 from typing_extensions import Annotated
+from pwlib import PasswordHash
 
 # JWT configuration - following official FastAPI pattern
 # to get a string like this run: openssl rand -hex 32
@@ -82,77 +83,129 @@ app = FastAPI()
 
 # TODO: Create password context using CryptContext
 # pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-pwd_context = None
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto") 
 
 # TODO: Create OAuth2 scheme
 # oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
-oauth2_scheme = None
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+
+password_hash = PasswordHash.recommended
 
 # TODO: Create Pydantic models following the official pattern
 class Token(BaseModel):
     # TODO: Add access_token and token_type fields
-    pass
+    acess_token: str
+    token_type: str
 
 class TokenData(BaseModel):
     # TODO: Add username field (Union[str, None] = None)
-    pass
+    # username = Union[str, None] = None        # ! Union is for describing a type, not creating a value 
+    username: str | None = None
+
 
 class User(BaseModel):
     # TODO: Add username, email, full_name, disabled fields
-    pass
+    username: str
+    email: str | None = None
+    full_name: str | None = None
+    disabled: bool | None = None
 
 class UserInDB(User):
     # TODO: Add hashed_password field
-    pass
+    hashed_password: str 
 
 # TODO: Create password functions
 def verify_password(plain_password, hashed_password):
     # TODO: Use pwd_context.verify(plain_password, hashed_password)
-    pass
+    return pwd_context.verify(plain_password, hashed_password)
 
 def get_password_hash(password):
     # TODO: Use pwd_context.hash(password)
-    pass
+    return password_hash.hash(password)
 
 # TODO: Create user helper functions
 def get_user(db, username: str):
     # TODO: Get user from database and return UserInDB instance
-    pass
+    if username in db:
+        user_dict = db[username]
+        return UserInDB(**user_dict)
 
 def authenticate_user(fake_db, username: str, password: str):
     # TODO: Get user and verify password, return user or False
-    pass
+    user = get_user(fake_db, username)
+    if not user:
+        return False
+    if not verify_password(password, user.hashed_password):
+        return False
+    return user
 
 # TODO: Create JWT token functions
 def create_access_token(data: dict, expires_delta: Union[timedelta, None] = None):
     # TODO: Create JWT token with expiration using jwt.encode()
-    pass
+    to_encode = data.copy()
+    if expires_delta:
+        expire = datetime.now(timezone.utc) + expires_delta
+    else:
+        expire = datetime.now(timezone.utc) + timedelta(minutes=15)
+    to_encode.update({"exp": expire})
+    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, ALGORITHM=ALGORITHM)
+    return encoded_jwt 
 
 # TODO: Create get_current_user dependency
-async def get_current_user():
+async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
     # TODO: Decode JWT token, extract username, get user from database
     # Handle InvalidTokenError and raise credentials_exception
-    pass
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials"
+    )
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        username = payload.get("sub")
+        if username is None:
+            raise credentials_exception
+        token_data = TokenData(username=username)
+    except InvalidTokenError:
+        raise credentials_exception
+    user = get_user(fake_users_db, username=token_data.username)
+    if user is None:
+        raise credentials_exception
+    return user 
 
 # TODO: Create get_current_active_user dependency
-async def get_current_active_user():
+async def get_current_active_user(current_user: Annotated[User, Depends(get_current_user)],):
     # TODO: Check if user is not disabled
-    pass
+    if current_user.disabled:
+        raise HTTPException(status_code=400, detail="Inactive user")
+    return current_user
 
 # TODO: Create /token endpoint
 @app.post("/token")
-async def login_for_access_token():
+async def login_for_access_token(form_data: Annotated[OAuth2PasswordRequestForm, Depends()],):
     # TODO: Authenticate user and return JWT token with expiration
-    pass
+    user = authenticate_user(fake_users_db, form_data.username, form_data.password)
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect username or password",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = create_access_token(
+        data={"sub": user.username}, expires_delta=access_token_expires
+    )
+    return Token(access_token=access_token, token_type="bearer")
 
 # TODO: Create /users/me/ endpoint
-@app.get("/users/me/")
-async def read_users_me():
-    # TODO: Return current user using JWT authentication
-    pass
+@app.get("/users/me/", response_model=User)
+async def read_users_me(
+    current_user: Annotated[User, Depends(get_current_active_user)],
+):
+    return current_user
 
 # TODO: Create /users/me/items/ endpoint
 @app.get("/users/me/items/")
-async def read_own_items():
-    # TODO: Return user's items using JWT authentication
-    pass
+async def read_own_items(
+    current_user: Annotated[User, Depends(get_current_active_user)],
+):
+    return [{"item_id": "Foo", "owner": current_user.username}]

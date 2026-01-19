@@ -1,0 +1,2 @@
+npm install -D tsx
+npx tsx XXXXXX.ts 
