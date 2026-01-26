@@ -1,3 +1,41 @@
+"""
+Docstring for 33. SQL Databases with SQLModel
+
+
+Key Field Configurations:
+
+primary_key=True: Marks the field as the table's primary key
+index=True: Creates a database index for faster queries
+default=None: Allows the database to auto-generate values (especially for IDs)
+
+
+🔧 Key Concepts
+Multiple Models Pattern: Use different models for different purposes (security, validation)
+Table Models: Classes with table=True represent database tables (Hero)
+Data Models: Classes without table=True are for API contracts (HeroPublic, HeroCreate)
+Model Inheritance: Use base classes to share common fields (HeroBase)
+Response Models: Use response_model to control what data is returned to clients
+Partial Updates: Use exclude_unset=True to update only provided fields
+Database Engine: Manages database connections and should be created once
+Sessions: Handle individual transactions and should be injected per request
+Dependency Injection: Use Depends() to inject database sessions into endpoints
+Query Builder: Use select() for complex database queries
+Pagination: Implement with offset and limit parameters
+
+ Best Practices
+Multiple Models for Security: Never expose sensitive data like secret_name in public APIs
+Use Response Models: Always specify response_model to control API responses
+Model Inheritance: Use base models to avoid duplicating field definitions
+Partial Updates: Use exclude_unset=True for PATCH operations to update only provided fields
+Primary Key Required: Every table model must have a primary key field
+Session Per Request: Use dependency injection for database sessions to ensure thread safety
+Proper Error Handling: Always check if records exist before operations
+Database Startup: Create tables during application startup with @app.on_event("startup")
+Connection Arguments: Use check_same_thread=False for SQLite with FastAPI
+Query Limits: Always limit query results to prevent performance issues
+Transaction Management: Use session.commit() to save changes and session.refresh() to get updated data
+
+"""
 from typing import Annotated
 from fastapi import Depends, FastAPI, HTTPException, Query
 from sqlmodel import Field, Session, SQLModel, create_engine, select

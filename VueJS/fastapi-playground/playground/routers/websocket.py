@@ -10,6 +10,10 @@ ticks = [
   {"id": 2, "name": "GOOG", "price": 2700}
 ]
 
+@router.get("/ticks")
+async def get_ticks():
+    return ticks
+
 @router.websocket("/")
 async def websocket_endpoint(ws: WebSocket):
     await ws.accept()
